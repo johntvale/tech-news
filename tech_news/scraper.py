@@ -22,7 +22,6 @@ def fetch(url):
 
 # Requisito 2
 def scrape_novidades(html_content):
-    """Seu código deve vir aqui"""
     selector = Selector(text=html_content)
     urls = selector.css("h2.entry-title a::attr(href)").getall()
     return urls
@@ -30,7 +29,9 @@ def scrape_novidades(html_content):
 
 # Requisito 3
 def scrape_next_page_link(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(text=html_content)
+    next_page_btn = selector.css("div.nav-links a.next::attr(href)").get()
+    return next_page_btn
 
 
 # Requisito 4
