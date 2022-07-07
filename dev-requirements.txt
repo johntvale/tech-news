@@ -7,3 +7,4 @@ pytest==7.0.1
 pytest-mock==3.5.1
 pytest-json==0.4.0
 parsel==1.6.0
+BeautifulSoup4==4.11.1

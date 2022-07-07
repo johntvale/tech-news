@@ -1,6 +1,7 @@
 import requests
 import time
 from parsel import Selector
+from bs4 import BeautifulSoup
 
 
 # Requisito 1
@@ -34,9 +35,40 @@ def scrape_next_page_link(html_content):
     return next_page_btn
 
 
+def remove_tags_html(text_with_tags):
+    text = BeautifulSoup(text_with_tags, "lxml").get_text()
+    return text
+
+
 # Requisito 4
 def scrape_noticia(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(text=html_content)
+    base_url = selector.css("link[rel=canonical]::attr(href)").get()
+    title = selector.css("h1.entry-title::text").get()
+    timestamp = selector.css("li.meta-date::text").get()
+    writer = selector.css("span.author a::text").get()
+
+    comments = selector.css("ol.comment-list li").getall()
+    comments_count = len(comments)
+
+    summary_full_text = selector.css("div.entry-content p").get()
+    summary = remove_tags_html(summary_full_text)
+
+    tags = selector.css("a[rel*=tag]::text").getall()
+    category = selector.css("a.category-style span.label::text").get()
+
+    print(summary)
+
+    return {
+        "url": base_url,
+        "title": title,
+        "timestamp": timestamp,
+        "writer": writer,
+        "comments_count": comments_count,
+        "summary": summary,
+        "tags": tags,
+        "category": category
+    }
 
 
 # Requisito 5
