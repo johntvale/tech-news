@@ -2,6 +2,7 @@ import requests
 import time
 from parsel import Selector
 from bs4 import BeautifulSoup
+from tech_news.database import create_news
 
 
 # Requisito 1
@@ -48,16 +49,14 @@ def scrape_noticia(html_content):
     timestamp = selector.css("li.meta-date::text").get()
     writer = selector.css("span.author a::text").get()
 
-    comments = selector.css("ol.comment-list li").getall()
-    comments_count = len(comments)
+    all_comments = selector.css("ol.comment-list li").getall()
+    comments_count = len(all_comments)
 
-    summary_full_text = selector.css("div.entry-content p").get()
-    summary = remove_tags_html(summary_full_text)
+    first_paragraph = selector.css("div.entry-content p").getall()[0]
+    summary = remove_tags_html(first_paragraph)
 
     tags = selector.css("a[rel*=tag]::text").getall()
     category = selector.css("a.category-style span.label::text").get()
-
-    print(summary)
 
     return {
         "url": base_url,
@@ -73,4 +72,24 @@ def scrape_noticia(html_content):
 
 # Requisito 5
 def get_tech_news(amount):
-    """Seu código deve vir aqui"""
+    page_to_get_the_urls = 'https://blog.betrybe.com'
+    news_urls = []
+    news_data = []
+
+    while len(news_urls) < amount:
+        current_page = fetch(page_to_get_the_urls)
+        urls_on_current_page = scrape_novidades(current_page)
+        news_urls.extend(urls_on_current_page)
+        page_to_get_the_urls = scrape_next_page_link(current_page)
+
+    for index, url in enumerate(news_urls):
+        if (index == amount):
+            break
+        else:
+            current_news = fetch(url)
+            current_data = scrape_noticia(current_news)
+            news_data.append(current_data)
+
+    create_news(news_data)
+
+    return news_data
