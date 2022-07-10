@@ -2,16 +2,20 @@ from datetime import datetime
 from tech_news.database import search_news
 
 
+def get_tuple_list(received_list):
+    output_list = []
+    for each_item in received_list:
+        output_list.append((each_item["title"], each_item["url"]))
+    return output_list
+
+
 # Requisito 6
 def search_by_title(title):
     if type(title) != str:
         return []
     else:
         news = search_news({"title": {"$regex": title, "$options": "i"}})
-        output_list = []
-        for each_news in news:
-            output_list.append((each_news["title"], each_news["url"]))
-        return output_list
+        return get_tuple_list(news)
 
 
 def new_format_date(date):
@@ -30,11 +34,7 @@ def new_format_date(date):
         12: "dezembro"
     }
 
-    year = date.year
-    month = months[date.month]
-    day = date.day
-
-    return f"{day} de {month} de {year}"
+    return f"{date.day} de {months[date.month]} de {date.year}"
 
 
 # Requisito 7
@@ -42,21 +42,23 @@ def search_by_date(date):
     try:
         date_format = datetime.fromisoformat(date).date()
         new_date = new_format_date(date_format)
-        print(new_date)
         news = search_news({
             "timestamp": {"$regex": new_date, "$options": "i"}
         })
-        output_list = []
-        for each_news in news:
-            output_list.append((each_news["title"], each_news["url"]))
-        return output_list
+        return get_tuple_list(news)
     except ValueError:
         raise ValueError("Data inválida")
 
 
 # Requisito 8
 def search_by_tag(tag):
-    """Seu código deve vir aqui"""
+    if type(tag) != str:
+        return []
+    else:
+        news = search_news({
+            "tags": {"$regex": tag, "$options": "i"}
+        })
+        return get_tuple_list(news)
 
 
 # Requisito 9
