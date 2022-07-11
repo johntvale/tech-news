@@ -29,6 +29,6 @@ def top_5_categories():
 
     return sorted_by_quantity[:5]
 
-# referencias da orderação:
+# referências da orderação:
 # https://careerkarma.com/blog/python-sort-a-dictionary-by-value/#:~:text=To%20sort%20a%20dictionary%20by%20value%20in%20Python%20you%20can,Dictionaries%20are%20unordered%20data%20structures.
 # https://stackoverflow.com/questions/8966538/syntax-behind-sortedkey-lambda
